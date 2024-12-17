@@ -1,0 +1,272 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+}
+
+header {
+    /* background-color: #f4f4f4; */
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* border-bottom: 1px solid #ddd; */
+
+    h1 {
+        font-size: medium;
+        padding: 10px;
+        font-weight: bold;
+    }
+}
+
+header button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: rgb(215,150,221) !important;
+    margin: 0;
+    padding: 10px;
+}
+
+header button svg path {
+    stroke: rgba(219,159,224,1) !important;
+  }
+
+header button:disabled {
+    color: #2c2c2c !important;
+    cursor: default;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: flex-start;
+    margin: 16px;
+}
+
+.page {
+    display: none;
+    flex-direction: column;
+    /* align-items: center; */
+}
+
+.page.active {
+    display: flex;
+}
+
+.main-btn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+button {
+    margin: 10px;
+    padding: 16px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 0.5rem;
+}
+
+.border-grad {
+    width: 90%;
+}
+
+.feature {
+    background: linear-gradient(#2c2c2c, #2c2c2c) padding-box, linear-gradient(90deg, rgba(219,159,224,1) 23%, rgba(230,210,164,1) 100%) border-box;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    /* border: 2px solid #eac12e; */
+    /* background-color: #eac12e; */
+    color: white;
+    box-shadow: 0 5px 10px rgba(#000, 0.1);
+    transition: 0.15s ease;
+    cursor: pointer;
+    position: relative;
+
+    &:hover {
+        color: #2c2c2c;
+        transition: 0.5s;
+        font-weight: bold;
+        background: rgb(215,150,221);
+        background: linear-gradient(90deg, rgba(219,159,224,1) 23%, rgba(230,210,164,1) 100%);
+    }
+
+    &:focus {
+        outline-color: transparent;
+        outline-style: solid;
+        font-weight: bold;
+        box-shadow: 0 0 0 4px #ffd639;
+        transition: 0.5s;
+    }
+
+    &:active {
+        background-color: #45503b;
+        font-weight: bold;
+        transition: 0.5s;
+    }
+}
+
+.check-result {
+    text-align: center;
+    font-weight: bold;
+    font-size: 2em;
+    margin: 20px 0;
+}
+
+.color-box-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.color-box {
+    border-radius: 0.5rem;
+}
+
+/* touch-target */
+#fore-color,
+#back-color {
+    border-radius: 4px;
+}
+
+.pass {
+    color: green;
+    font-weight: bold;
+}
+
+.fail {
+    color: red;
+    font-weight: bold;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column; /* Arrange rows vertically */
+    gap: 10px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between; /* Distribute space between columns */
+}
+
+.column {
+    flex: 1; /* Make columns equal width */
+    text-align: left;
+}
+
+.label {
+    flex: 3; /* Takes 3 parts of the available width */
+    text-align: left;
+}
+
+.result {
+    flex: 1; /* Takes 1 part of the available width */
+    text-align: right;
+}
+
+.button-width {
+    width: 40%;
+}
+
+.card {
+    /* background-color: #ffffff; */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Light shadow for elevation */
+    overflow: hidden;
+    padding: 10px;
+    margin: 0 0 16px 0;
+
+    h2 {
+        margin: 0 0 10px 0;
+        font-size: medium;
+    }
+}
+
+.touch-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.preview-box {
+    width: 200px; /* Fixed width */
+    height: 200px; /* Fixed height */
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9;
+    overflow: hidden;
+    position: relative;
+}
+
+.preview-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.placeholder {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+.preview-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.original, .colorblind-preview {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+        max-height: 100%;
+        max-width: 100%;
+    }
+}
+
+.preview {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.generate-btn {
+    background-color: #45503b;
+    color: white;
+    border: none;
+}

@@ -3,6 +3,7 @@
     "@create-figma-plugin/ui": "^3.2.1",
     "@create-figma-plugin/utilities": "^3.2.1",
     "buffer": "^6.0.3",
+    "html2canvas": "^1.4.1",
     "preact": ">=10"
   },
   "devDependencies": {
@@ -26,7 +27,7 @@
       "figma"
     ],
     "id": "accessibility-evaluator",
-    "name": "Preact Tailwind Css",
+    "name": "Accessibility Check",
     "main": "src/main.ts",
     "ui": "src/ui.tsx"
   }

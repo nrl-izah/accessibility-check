@@ -31,14 +31,11 @@ header button {
     border: none;
     font-size: 16px;
     cursor: pointer;
-    color: rgb(215,150,221) !important;
+    color: rgba(230,210,164,1) !important;
     margin: 0;
     padding: 10px;
 }
 
-header button svg path {
-    stroke: rgba(219,159,224,1) !important;
-  }
 
 header button:disabled {
     color: #2c2c2c !important;
@@ -64,12 +61,20 @@ main {
     display: flex;
 }
 
+.home-pg {
+    h1 {
+        font-size: 1.2em;
+        padding: 0 10px;
+    }
+}
+
 .main-btn {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin: 0 0 10px 0;
 }
 
 button {
@@ -80,14 +85,100 @@ button {
     border-radius: 0.5rem;
 }
 
+.collapsible {
+    cursor: pointer;
+    padding: 10px;
+    background-color: rgba(230,210,164,1);
+    border-radius: 0.5rem;
+    color: #2c2c2c;
+    font-weight: bold;
+}
+
+.ins-collapsible {
+    padding: 10px;
+    /* background-color: rgba(230,210,164,1); */
+    border-radius: 0.5rem;
+    color: #f9f9f9;
+}
+
+.info {
+    p {
+        margin: 10px;
+    }
+}
+
+ul {
+    margin-bottom: 8px;
+    margin-left: 20px; 
+    list-style-type: disc;
+  }
+  
+li {
+    margin-bottom: 8px;
+}
+
+a {
+    color: #ffd639;
+}
+
+.instruction {
+    font-style: italic;
+    margin: 10px 0;
+    color: #aaa;
+}
+
+.badge-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.badge {
+    border-radius: 50px;
+    margin: 0 0 10px 10;
+    padding: 5px;
+    background-color: #de1e1e;
+    font-size: medium;
+}
+
 .border-grad {
     width: 90%;
+}
+
+.btn {
+    padding: 12px 16px;
+    cursor: pointer;
+    text-align: center !important;
+}
+
+.margin-up {
+    margin-top: 12px;
+}
+
+.grad {
+    background: linear-gradient(#2c2c2c, #2c2c2c) padding-box, linear-gradient(90deg, rgba(219,159,224,1) 23%, rgba(230,210,164,1) 100%) border-box;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center;
+    justify-content: center; */
+    border-radius: 0.5rem;
+    /* border: 2px solid #eac12e; */
+    /* background-color: #eac12e; */
+    color: white;
+    box-shadow: 0 5px 10px rgba(#000, 0.1);
+    transition: 0.15s ease;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 12px;
+    padding: 16px 20px;
 }
 
 .feature {
     background: linear-gradient(#2c2c2c, #2c2c2c) padding-box, linear-gradient(90deg, rgba(219,159,224,1) 23%, rgba(230,210,164,1) 100%) border-box;
     border: 2px solid transparent;
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -123,11 +214,30 @@ button {
     }
 }
 
+.link {
+    color: rgba(230,210,164,1);
+    cursor: pointer;
+    text-decoration: underline;
+    margin: 5px 0px;
+    display: flex;
+    
+    &:hover {
+    color: #ffd639;
+    }
+    
+    }
+
+.heading {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
 .check-result {
     text-align: center;
     font-weight: bold;
-    font-size: 2em;
-    margin: 20px 0;
+    font-size: 2.5em;
+    margin: 0 0 20px 0;
 }
 
 .color-box-container {
@@ -138,6 +248,12 @@ button {
 
 .color-box {
     border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+hr {
+    border: solid #aaa 1px;
+    margin-bottom: 10px;
 }
 
 /* touch-target */
@@ -146,13 +262,13 @@ button {
     border-radius: 4px;
 }
 
-.pass {
-    color: green;
+.result.pass {
+    color: rgb(20, 205, 20);
     font-weight: bold;
 }
 
-.fail {
-    color: red;
+.result.fail {
+    color: rgb(255, 0, 0);
     font-weight: bold;
 }
 
@@ -172,18 +288,47 @@ button {
     text-align: left;
 }
 
+.column-center {
+    flex: 1; /* Make columns equal width */
+    text-align: center;
+}
+
 .label {
     flex: 3; /* Takes 3 parts of the available width */
     text-align: left;
+    flex-direction: row;
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .result {
     flex: 1; /* Takes 1 part of the available width */
-    text-align: right;
+    text-align: right !important;  
+}
+
+.svg-container {
+    display: flex;
+    justify-content: end;
+    cursor: pointer;
+
+}
+
+.svg-container svg:hover g {
+    fill: #ffd639;
+}
+
+
+.svg-container svg:hover path {
+    fill: #ffd639;
+}
+
+.gray {
+    color: #A9A9A9;
 }
 
 .button-width {
-    width: 40%;
+    margin-right: 10px;
 }
 
 .card {
@@ -194,9 +339,37 @@ button {
     padding: 10px;
     margin: 0 0 16px 0;
 
+    h1 {
+        margin: 10px 0;
+        font-size: 2.5em;
+        font-weight: bold;
+    }
+
     h2 {
-        margin: 0 0 10px 0;
+        margin: 0 0 5px 0;
         font-size: medium;
+        font-weight: bold;
+    }
+}
+
+.card-i {
+    /* background-color: #ffffff; */
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 10px;
+    margin: 0 0 16px 0;
+
+    h1 {
+        margin: 10px 0;
+        font-size: 2.5em;
+        font-weight: bold;
+        color: rgba(230,210,164,1) !important;
+    }
+
+    h2 {
+        margin: 10px 0;
+        font-size: medium;
+        font-weight: bold;
     }
 }
 
@@ -206,6 +379,7 @@ button {
     align-items: center;
     justify-content: center;
     width: 100%;
+    margin: 20px 0;
 }
 
 .preview-box {
@@ -231,12 +405,12 @@ button {
 
 .placeholder {
     color: #aaa;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 .preview-container {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     justify-content: center;
     align-items: center;
     margin: 10px;
@@ -263,10 +437,4 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.generate-btn {
-    background-color: #45503b;
-    color: white;
-    border: none;
 }

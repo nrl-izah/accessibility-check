@@ -401,7 +401,6 @@ const autoScan = async (): Promise<void> => {
 
   console.log("Contrast Violations:", contrastViolations);
   console.log("Touch Target Violations:", touchTargetViolations);
-  // console.log("Text Hierarchy Analysis:", textAnalysis);
 
   if (contrastViolations.length === 0 && touchTargetViolations.length === 0) {
     figma.ui.postMessage({
@@ -1419,52 +1418,52 @@ const getBackgroundNode = (node: SceneNode): SceneNode | null => {
   }
 
   let ancestor: BaseNode | null = parent;
-while (ancestor && ancestor.type !== "PAGE") {
-  if ("fills" in ancestor) {
-    const fills = ancestor.fills as Paint[];
-    const hasSolidFill = fills.some(fill => fill.type === "SOLID");
+  while (ancestor && ancestor.type !== "PAGE") {
+    if ("fills" in ancestor) {
+      const fills = ancestor.fills as Paint[];
+      const hasSolidFill = fills.some(fill => fill.type === "SOLID");
 
-    if (hasSolidFill) {
-      return ancestor as SceneNode; // âœ… Ensure it's a SceneNode
+      if (hasSolidFill) {
+        return ancestor as SceneNode; // âœ… Ensure it's a SceneNode
+      }
     }
-  }
 
-  // âœ… Check if ancestor is a valid SceneNode before accessing `parent.children`
-  if (ancestor.parent && "children" in ancestor.parent) {
-    const parentSiblings = ancestor.parent.children;
-    
-    // âœ… Type assertion: Ensure ancestor is a SceneNode
-    if (ancestor.type !== "DOCUMENT") {
-      const parentIndex = parentSiblings.indexOf(ancestor as SceneNode);
+    // Check if ancestor is a valid SceneNode before accessing `parent.children`
+    if (ancestor.parent && "children" in ancestor.parent) {
+      const parentSiblings = ancestor.parent.children;
+      
+      // Type assertion: Ensure ancestor is a SceneNode
+      if (ancestor.type !== "DOCUMENT") {
+        const parentIndex = parentSiblings.indexOf(ancestor as SceneNode);
 
-      for (let i = parentIndex - 1; i >= 0; i--) {
-        const potentialBg = parentSiblings[i];
+        for (let i = parentIndex - 1; i >= 0; i--) {
+          const potentialBg = parentSiblings[i];
 
-        if (
-          potentialBg.visible &&
-          "fills" in potentialBg &&
-          potentialBg.absoluteBoundingBox &&
-          node.absoluteBoundingBox
-        ) {
-          const fills = potentialBg.fills as Paint[];
-          const hasSolidFill = fills.some(fill => fill.type === "SOLID");
+          if (
+            potentialBg.visible &&
+            "fills" in potentialBg &&
+            potentialBg.absoluteBoundingBox &&
+            node.absoluteBoundingBox
+          ) {
+            const fills = potentialBg.fills as Paint[];
+            const hasSolidFill = fills.some(fill => fill.type === "SOLID");
 
-          const coversNode =
-            potentialBg.absoluteBoundingBox.x <= node.absoluteBoundingBox.x &&
-            potentialBg.absoluteBoundingBox.y <= node.absoluteBoundingBox.y &&
-            potentialBg.absoluteBoundingBox.x + potentialBg.absoluteBoundingBox.width >= node.absoluteBoundingBox.x + node.absoluteBoundingBox.width &&
-            potentialBg.absoluteBoundingBox.y + potentialBg.absoluteBoundingBox.height >= node.absoluteBoundingBox.y + node.absoluteBoundingBox.height;
+            const coversNode =
+              potentialBg.absoluteBoundingBox.x <= node.absoluteBoundingBox.x &&
+              potentialBg.absoluteBoundingBox.y <= node.absoluteBoundingBox.y &&
+              potentialBg.absoluteBoundingBox.x + potentialBg.absoluteBoundingBox.width >= node.absoluteBoundingBox.x + node.absoluteBoundingBox.width &&
+              potentialBg.absoluteBoundingBox.y + potentialBg.absoluteBoundingBox.height >= node.absoluteBoundingBox.y + node.absoluteBoundingBox.height;
 
-          if (hasSolidFill && coversNode) {
-            return potentialBg; // âœ… Found background (e.g., Rectangle)
+            if (hasSolidFill && coversNode) {
+              return potentialBg; // âœ… Found background (e.g., Rectangle)
+            }
           }
         }
       }
     }
-  }
 
-  ancestor = ancestor.parent;
-}
+    ancestor = ancestor.parent;
+  }
 
 
   return null; // No valid background found

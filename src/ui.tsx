@@ -161,12 +161,30 @@ function Plugin () {
   };
 
   const handleDismiss = (violationId: string) => {
-    // Send the dismissal message to the plugin main code
     setDismissedViolations((prev) => new Set(prev).add(violationId));
+
+    // Send the dismissal message to the plugin main code
     setTimeout(() => {
-      onDismiss(violationId);
+      setAutoScanResults((prev) => {
+        const isContrastViolation = prev.contrastViolations.some((v) => v.violationId === violationId);
+        const isTouchViolation = prev.touchTargetViolations.some((v) => v.violationId === violationId);
+  
+        return {
+          ...prev,
+          contrastLen: isContrastViolation ? Math.max(0, prev.contrastLen - 1) : prev.contrastLen,
+          touchLen: isTouchViolation ? Math.max(0, prev.touchLen - 1) : prev.touchLen,
+          contrastViolations: prev.contrastViolations.filter((v) => v.violationId !== violationId),
+          touchTargetViolations: prev.touchTargetViolations.filter((v) => v.violationId !== violationId),
+        };
+      });
+  
+      setDismissedViolations((prev) => {
+        const updated = new Set(prev);
+        updated.delete(violationId);
+        return updated;
+      });
     }, 300);
-    parent.postMessage({ pluginMessage: { type: "dismiss-violation", id: violationId } }, "*");
+    parent.postMessage({ pluginMessage: { type: "dismiss-violation", violationId: violationId } }, "*");
   };
   
 
@@ -479,7 +497,7 @@ function Plugin () {
                         {autoScanResults.contrastViolations
                         .filter((violation) => !dismissedViolations.has(violation.layerId))
                         .map((violation, index) => (
-                          <div className="grad" key={index} onClick={() => handleLayerSelection(violation.layerId)}>
+                          <div className={`grad ${dismissedViolations.has(violation.violationId) ? "dismiss-animation" : ""}`} key={index} onClick={() => handleLayerSelection(violation.layerId)}>
                             <div className="flex-container">
                               <div className="row">
                                 <div className="column" style={{fontStyle: "italic"}}>{violation.frame} {'>'} {violation.layer}</div>

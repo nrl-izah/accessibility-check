@@ -24,6 +24,17 @@ export default function () {
   // Listen for messages
 
   figma.ui.onmessage = async (msg) => {
+    if (msg.type === "dismiss-violation") {
+      const dismissedId = msg.violationId;
+      console.log('Here to dismiss');
+      // Retrieve existing dismissed list from client storage
+      let dismissed = (await figma.clientStorage.getAsync("dismissedViolations")) || [];
+      if (!dismissed.includes(dismissedId)) {
+        dismissed.push(dismissedId);
+        await figma.clientStorage.setAsync("dismissedViolations", dismissed);
+      }
+      figma.notify("Violation dismissed", { error: true, timeout: 3000 })
+    } 
     if (msg.type === 'start-auto-scan') {
       console.log('Direct handler: Starting auto-scan...');
       autoScan();
@@ -272,19 +283,39 @@ const getAllChildren = (node: SceneNode): SceneNode[] => {
   return children;
 };
 
+const isSvgElement = (node: SceneNode): boolean => {
+  if (node.type === "VECTOR" && node.parent && node.parent.type === "GROUP") {
+    const parentGroup = node.parent as GroupNode;
+    // Heuristic: if every child in the group is either a VECTOR or BOOLEAN_OPERATION,
+    // assume this group is an SVG.
+    return parentGroup.children.every(
+      (child) =>
+        child.type === "VECTOR" || child.type === "BOOLEAN_OPERATION"
+    );
+  }
+  return false;
+};
 
 const autoScan = async (): Promise<void> => {
-  const frames = figma.currentPage.findAll(node =>
-    node.type === "FRAME" || node.type === "GROUP" || node.type === "COMPONENT" || node.type === "INSTANCE"
+  // Limit scanning to the active page to reduce node count
+  const dismissedViolations: string[] = (await figma.clientStorage.getAsync("dismissedViolations")) || [];
+
+  const frames = figma.currentPage.findAll(
+    (node) =>
+      node.type === "FRAME" ||
+      node.type === "GROUP" ||
+      node.type === "COMPONENT" ||
+      node.type === "INSTANCE"
   ) as FrameNode[];
 
-  // Separate lists for different categories of violations
+  // Accumulate results
   const contrastViolations: {
     layerId: string;
     frame: string;
     layer: string;
     contrastRatio: string;
     issueDescription: string;
+    violationId: string;
   }[] = [];
 
   const touchTargetViolations: {
@@ -294,108 +325,135 @@ const autoScan = async (): Promise<void> => {
     width: number;
     height: number;
     issueDescription: string;
+    violationId: string;
   }[] = [];
 
+  // Process each frame's children
+  const processFrame = async (frame: FrameNode) => {
+    await Promise.all(
+      frame.children.map(async (layer) => {
+        try {
+          // Skip layers without fills or with empty fills
+          if (!("fills" in layer) || !Array.isArray(layer.fills) || layer.fills.length === 0)
+            return;
 
+          // === Color Contrast Check ===
+          const fillColor = getColors(layer);
+          if (fillColor) {
+            const backgroundNode = getBackgroundNode(layer);
+            // Default background is white if none is found
+            const backgroundColor = backgroundNode ? getColors(backgroundNode) : { r: 255, g: 255, b: 255 };
 
-  for (const frame of frames) {
-    // Use Promise.all to wait for all async operations within the loop
-    // const allLayers = getAllChildren(frame);
-    await Promise.all(frame.children.map(async (layer) => {
-      // Skip non-relevant layers
-      if (!("fills" in layer) || !Array.isArray(layer.fills) || layer.fills.length === 0) return;
+            if (backgroundColor) {
+              const contrastRatio = calculateContrastRatio(fillColor, backgroundColor);
+              const results = evaluateContrast(contrastRatio);
 
-      // Handle color contrast check
-      const fillColor = getColors(layer);
-      if (fillColor) {
-        const backgroundNode = getBackgroundNode(layer);
-        const backgroundColor = backgroundNode
-          ? getColors(backgroundNode)
-          : { r: 255, g: 255, b: 255 }; // Default to white background
+              // Determine contrast failure
+              const failsAA = results.AA_NormalText === "false";
+              const failsAAA = results.AAA_NormalText === "false";
+              const failsAALarge = results.AA_LargeText === "false";
+              const failsAAALarge = results.AAA_LargeText === "false";
 
-          if (backgroundColor) {
-            const contrastRatio = calculateContrastRatio(fillColor, backgroundColor);
-            const results = evaluateContrast(contrastRatio);
+              let contrastIssueDescription = "";
+              if (failsAALarge && failsAA && failsAAALarge && failsAAA) {
+                contrastIssueDescription = "Contrast is extremely low. Low vision people may be affected.";
+              } else if (!failsAALarge && failsAA && failsAAALarge && failsAAA) {
+                contrastIssueDescription = "Contrast doesn't meet AA for normal text size.";
+              } else if (!failsAALarge && !failsAA && !failsAAALarge && failsAAA) {
+                contrastIssueDescription = "Contrast doesn't meet AAA for normal text size.";
+              }
 
-            let contrastIssueDescription = "";
-            const failsAA = results.AA_NormalText === "false";
-            const failsAAA = results.AAA_NormalText === "false";
-            const failsAALarge = results.AA_LargeText === "false";
-            const failsAAALarge = results.AAA_LargeText === "false";
-
-            if (failsAALarge && failsAA && failsAAALarge && failsAAA) {
-              contrastIssueDescription = "Contrast is extremely low. Low vision people may be affected.";
-            } else if (!failsAALarge && failsAA && failsAAALarge && failsAAA) {
-              contrastIssueDescription = "Contrast doesn't meet AA for normal text size.";
-            } else if (!failsAALarge && !failsAA && !failsAAALarge && failsAAA) {
-              contrastIssueDescription = "Contrast doesn't meet AAA for normal text size.";
-            } 
-
-            if (Object.values(results).includes("false")) {
-              contrastViolations.push({
-                layerId: layer.id,
-                frame: frame.name,
-                layer: layer.name,
-                contrastRatio: contrastRatio.toFixed(2),
-                issueDescription: contrastIssueDescription,
-              });
+              if (failsAALarge || failsAA || failsAAALarge || failsAAA) {
+                const violationId = `${layer.id}-contrast`;
+                if (dismissedViolations.includes(violationId)) return;
+                contrastViolations.push({
+                  layerId: layer.id,
+                  frame: frame.name,
+                  layer: layer.name,
+                  contrastRatio: contrastRatio.toFixed(2),
+                  issueDescription: contrastIssueDescription,
+                  violationId,
+                });
+              }
             }
           }
+
+          // === Touch Target Check ===
+          // Skip TEXT layers for touch target checks
+          if (layer.type === "TEXT") return;
+          if (isSvgElement(layer)) return;
+          const { width, height } = layer;
+          const violationId = `${layer.id}-touch`;
+            if (dismissedViolations.includes(violationId)) return;
+
+          const touchResults = {
+            wcagAA: width >= 24 && height >= 24,
+            wcagAAA: width >= 44 && height >= 44,
+            fluent: width >= 40 && height >= 40,
+            material: width >= 48 && height >= 48,
+            ios: width >= 44 && height >= 44,
+          };
+
+          let touchIssueDescription = "";
+          const failsAA = !touchResults.wcagAA;
+          const failsAAA = !touchResults.wcagAAA;
+          const failsFluent = !touchResults.fluent;
+          const failsMaterial = !touchResults.material;
+          const failsIOS = !touchResults.ios;
+
+          if (failsAA && failsFluent && failsAAA && failsIOS && failsMaterial) {
+            touchIssueDescription = "Touch target size is too small across all standards.";
+          } else if (!failsAA && failsFluent && failsAAA && failsIOS && failsMaterial) {
+            touchIssueDescription = "Touch target size only meet WCAG AA size requirement.";
+          } else if (!failsAA && !failsFluent && failsAAA && failsIOS && failsMaterial) {
+            touchIssueDescription = "Touch target size doesn't meet WCAG AAA size and iOS requirements.";
+          } else if (!failsAA && !failsFluent && !failsAAA && !failsIOS && failsMaterial) {
+            touchIssueDescription = "Touch target size doesn't meet Android requirement.";
+          }
+
+          if (!touchResults.wcagAA || !touchResults.fluent || !touchResults.wcagAAA || !touchResults.ios || !touchResults.material) {
+            touchTargetViolations.push({
+              layerId: layer.id,
+              frame: frame.name,
+              layer: layer.name,
+              width,
+              height,
+              issueDescription: touchIssueDescription,
+              violationId,
+            });
+          }
+        } catch (error) {
+          console.error(`Error processing layer "${layer.name}" in frame "${frame.name}":`, error);
         }
+      })
+    );
+  };
 
-      // Handle touch target check and generate SVG preview
-      if (layer.type === "TEXT") return;
-      const width = layer.width;
-      const height = layer.height;
-
-      const touchTargetResults = {
-        wcagAA: width >= 24 && height >= 24 ? "true" : "false",
-        wcagAAA: width >= 44 && height >= 44 ? "true" : "false",
-        fluent: width >= 40 && height >= 40 ? "true" : "false",
-        material: width >= 48 && height >= 48 ? "true" : "false",
-        ios: width >= 44 && height >= 44 ? "true" : "false",
-      };
-
-      // Determine the violation description
-      let touchIssueDescription = "";
-
-      const failsAA = touchTargetResults.wcagAA === "false";
-      const failsAAA = touchTargetResults.wcagAAA === "false";
-      const failsFluent = touchTargetResults.fluent === "false";
-      const failsMaterial = touchTargetResults.material === "false";
-      const failsIOS = touchTargetResults.ios === "false";
-
-      if (failsAA && failsFluent && failsAAA && failsIOS && failsMaterial) {
-        touchIssueDescription = "Touch target size is too small across all standards.";
-      } else if (!failsAA && failsFluent && failsAAA && failsIOS && failsMaterial) {
-        touchIssueDescription = "Touch target size only meet WCAG AA size requirement.";
-      } else if (!failsAA && !failsFluent && failsAAA && failsIOS && failsMaterial) {
-        touchIssueDescription = "Touch target size doesn't meet WCAG AAA size and iOS requirements.";
-      } else if (!failsAA && !failsFluent && !failsAAA && !failsIOS && failsMaterial) {
-        touchIssueDescription = "Touch target size doesn't meet Android requirement.";
-      } 
-
-      if (Object.values(touchTargetResults).includes("false")) {
-        touchTargetViolations.push({
-          layerId: layer.id,
-          frame: frame.name,
-          layer: layer.name,
-          width,
-          height,
-          issueDescription: touchIssueDescription,
-        });
-      }
-    }));
+  // Process frames in chunks to reduce memory load and UI blocking
+  const chunkSize = 20;
+  for (let i = 0; i < frames.length; i += chunkSize) {
+    const frameChunk = frames.slice(i, i + chunkSize);
+    await Promise.all(
+      frameChunk.map(async (frame) => {
+        try {
+          await processFrame(frame);
+        } catch (error) {
+          console.error(`Error processing frame "${frame.name}":`, error);
+        }
+      })
+    );
+    // Short delay between chunks to let the UI update
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
 
-  // Send categorized results to the UI
+  // Send results to the UI
   figma.ui.postMessage({
     type: "auto-scan-results",
     data: {
       contrastViolations,
       touchTargetViolations,
       contrastLen: contrastViolations.length,
-      touchLen: touchTargetViolations.length
+      touchLen: touchTargetViolations.length,
     },
   });
 
@@ -409,6 +467,7 @@ const autoScan = async (): Promise<void> => {
     });
   }
 };
+
 
 const handleContrastCheck = () => {
   const selection = figma.currentPage.selection;
@@ -826,12 +885,13 @@ const handleColorBlindnessForNode = async (
       }
     }
 
-    if (!color && hasImageFill) {
+    if (hasImageFill) {
       console.error("Images detected");
-      // figma.notify("We're sorry, currently images cannot be simulated.")
+      figma.notify("âš ï¸ We're sorry, currently images cannot be simulated.", { timeout: 3000 });
+      clonedNode.remove();
       return "";
     }
-    if (!color && !hasImageFill) {
+    if (!color || !hasImageFill) {
       console.error("No solid fill color found");
       figma.notify("No solid fill color found")
       clonedNode.remove();

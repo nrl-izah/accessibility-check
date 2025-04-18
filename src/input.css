@@ -156,6 +156,22 @@ a {
     margin-top: 12px;
 }
 
+.dismiss-animation {
+    animation: slideOutLeft 0.3s ease forwards;
+  }
+  
+  @keyframes slideOutLeft {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+  
+
 .grad {
     background: linear-gradient(#2c2c2c, #2c2c2c) padding-box, linear-gradient(90deg, rgba(219,159,224,1) 23%, rgba(230,210,164,1) 100%) border-box;
     border: 2px solid transparent;

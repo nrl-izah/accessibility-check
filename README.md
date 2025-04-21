@@ -1,6 +1,42 @@
-# Preact Tailwind Css
+# Accessibility Evaluator in UI Design for Figma
 
-## Development guide
+This Figma plugin was developed as part of my **Final Year Project** for the **BSc Computer Science** degree at the **University of Birmingham**. The project focuses on improving **accessibility in UI design** by helping designers identify and resolve common accessibility issues during the design phase.
+
+The plugin offers a user-friendly way to evaluate Figma designs against established accessibility standards (e.g., WCAG), with features tailored for designers and developers aiming to create inclusive digital experiences.
+
+---
+
+## ✨ Features
+
+- **Color Contrast Checker**
+  - Evaluates foreground and background color combinations
+  - Supports WCAG AA and AAA compliance
+  - Suggests accessible foreground colors that maintain visual harmony
+  - Option to define a custom contrast ratio
+
+- **Touch Target Size Evaluation**
+  - Identifies UI elements that are too small for touch interaction
+  - Ensures they meet minimum size guidelines for accessibility
+
+- **Vision Simulator**
+  - Simulates how designs appear to users and highlights possible accessibility issues with:
+    - Protanopia, Deuteranopia, Tritanopia, Achromatopsia
+  - Generates preview layers to visualize each condition
+
+- **Auto-Scan for Violations**
+  - Scans all frames in the file and groups violations by type
+  - Each issue includes details about affected frames and layers
+
+- **Accessibility Report Generation**
+  - Creates a visual report summarizing detected violations
+  - Automatically inserts report screenshot into the canvas
+ 
+- **Beginner Friendly**
+  - Provides clearer, actionable guidance for beginners
+
+---
+
+## 📦 Development guide
 
 *This plugin is built with [Create Figma Plugin](https://yuanqing.github.io/create-figma-plugin/).*
 

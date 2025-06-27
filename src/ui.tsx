@@ -796,7 +796,7 @@ function Plugin () {
               </div>
 
               <div className="card">
-                <h2>Fix Suggestion</h2>
+                <h2>WCAG Fix Suggestion</h2>
                 <hr />
                 {touchResults.wcagAA === "false" || touchResults.wcagAAA === "false" ? (
                   <p className="text-sm">If selected element is interactive, consider increasing the height or width following the recommendations.</p>

@@ -483,10 +483,13 @@ const handleContrastCheck = () => {
 
   let hasImageFill = false;
   if ("fills" in node && Array.isArray(node.fills)) {
-    hasImageFill = node.fills.some((fill) => fill.type === "IMAGE");
-    console.log('hasImageFill true.');
+    hasImageFill = node.fills.some((fill) => 
+      fill.type === "IMAGE" && fill.visible !== false
+    );
+    if (hasImageFill) {
+      console.log('hasImageFill true.');
+    }
   }
-
   if (!fillColor && hasImageFill) {
     figma.notify("Can't detect images!")
     return;
@@ -814,7 +817,7 @@ const handleVisionSimulator = async () => {
       } catch (error) {
         console.error(`Error during ${type} simulation:`, error);
         emit('vision-results', { error: `${type} simulation failed.` });
-        figma.notify("We're sorry, currently images can't be simulated yet.")
+        // figma.notify("We're sorry, currently images can't be simulated yet.")
         return false;
       }
       return true;
@@ -874,24 +877,32 @@ const handleColorBlindnessForNode = async (
     // Check if the node has an image fill.
     let hasImageFill = false;
     if ("fills" in node && Array.isArray(node.fills)) {
-      hasImageFill = node.fills.some((fill) => fill.type === "IMAGE");
+      hasImageFill = node.fills.some((fill) => 
+        fill.type === "IMAGE" && fill.visible !== false
+      );
+      if (hasImageFill) {
+        console.log('hasImageFill true.');
+          figma.notify("⚠️ We're sorry, currently images cannot be simulated.", { timeout: 3000 });
+        clonedNode.remove();
+        return "";
+      }
     }
 
     // If the node has no solid color, try getting the background rectangle
-    if (!color && !hasImageFill && "children" in node) {
+    if (!color && "children" in node) {
       const backgroundNode = getBackgroundElement(node);
       if (backgroundNode) {
         color = getColors(backgroundNode);
       }
     }
 
-    if (hasImageFill) {
-      console.error("Images detected");
-      figma.notify("âš ï¸ We're sorry, currently images cannot be simulated.", { timeout: 3000 });
-      clonedNode.remove();
-      return "";
-    }
-    if (!color || !hasImageFill) {
+    // if (hasImageFill) {
+      
+    //   figma.notify("âš ï¸ We're sorry, currently images cannot be simulated.", { timeout: 3000 });
+    //   clonedNode.remove();
+    //   return "";
+    // }
+    if (!color) {
       console.error("No solid fill color found");
       figma.notify("No solid fill color found")
       clonedNode.remove();

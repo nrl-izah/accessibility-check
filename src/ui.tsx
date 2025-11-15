@@ -239,7 +239,7 @@ function Plugin () {
         previewContent: `<p class="placeholder">No preview available</p>`,
         width: 0,
         height: 0,
-        dimensions: "0px Ã— 0px",
+        dimensions: "0px x 0px",
         wcagAA: "-",
         wcagAAA: "-",
         iosStatus: "-",

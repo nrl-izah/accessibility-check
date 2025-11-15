@@ -189,7 +189,7 @@ function Plugin () {
   
 
   const pageTitles: { [key: string]: string } = {
-    homePage: "Accessibility Evaluator",
+    homePage: "Accessibility Check",
     colorContrastPage: "Color Contrast",
     touchTargetPage: "Touch Target",
     visionSimulatorPage: "Colorblindness Simulator",
@@ -995,9 +995,9 @@ function Plugin () {
         {currentPage === "aboutPage" && (
           <div>
             <div className="card-i">
-              <h1>Welcome to Accessibility Evaluator!</h1>
+              <h1>Welcome to Accessibility Check!</h1>
 
-              <p>This plugin is your all-in-one accessibility toolkit for Figma. We help you create designs that are usable and inclusive for everyoneâ€”including people with visual or motor challenges. Hereâ€™s what our plugin does:</p>
+              <p>This plugin is your all-in-one accessibility toolkit for Figma. We help you create designs that are usable and inclusive for everyone including people with visual or motor challenges. Here's what our plugin does:</p>
 
               <ul>
                 <li>
@@ -1017,7 +1017,7 @@ function Plugin () {
               <h2>Why WCAG?</h2>
               <p>WCAG is the internationally recognized set of guidelines for creating accessible digital content. By using WCAG standards, our plugin helps you design with best practices in mind, ensuring your work is both beautiful and accessible.</p>
 
-              <p>Whether youâ€™re new to accessibility or an experienced designer, <strong>Accessibility Evaluator</strong> makes it easy to build inclusive designs that everyone can enjoy.</p>
+              <p>Whether you're new to accessibility or an experienced designer, <strong>Accessibility Check</strong> makes it easy to build inclusive designs that everyone can enjoy.</p>
             </div>
 
             <div class="card-i">
@@ -1026,7 +1026,7 @@ function Plugin () {
               <p>Accessibility in design means making sure that everyone, regardless of their abilities or disabilities, can use and enjoy digital content. This includes people with various physical, visual, auditory, and cognitive challenges. The goal is to create products that everyone can interact with, without barriers.</p>
               
               <h2>Why is Accessibility Important?</h2>
-              <p>Imagine if you couldnâ€™t read text because of poor contrast, or if you couldnâ€™t interact with buttons because theyâ€™re too small. Accessibility ensures that all usersâ€”whether they have disabilities or notâ€”can fully engage with your design. It makes your content usable by people with different needs, helping to create a more inclusive web.</p>
+              <p>Imagine if you couldn't read text because of poor contrast, or if you couldn't interact with buttons because they're too small. Accessibility ensures that all users whether they have disabilities or not can fully engage with your design. It makes your content usable by people with different needs, helping to create a more inclusive web.</p>
               
               <h2>Who Benefits from Accessibility?</h2>
               <p>Accessibility is not just for people with disabilities. Everyone benefits from accessible designs! For example:</p>
@@ -1034,10 +1034,10 @@ function Plugin () {
                 <li><strong>People with visual impairments:</strong> Accessible designs help those with low vision or color blindness better navigate your content.</li>
                 <li><strong>People with motor impairments:</strong> Accessible touch targets and easy navigation help users with limited mobility interact with your design.</li>
                 <li><strong>People with cognitive impairments:</strong> Clear layouts and readable text help users who may find it difficult to process complex information.</li>
-                <li><strong>People in challenging environments:</strong> Sometimes, people are in situations where they canâ€™t focus on small detailsâ€”like being outdoors in bright light. Accessibility ensures that they can still use your design in such environments.</li>
+                <li><strong>People in challenging environments:</strong> Sometimes, people are in situations where they can't focus on small details like being outdoors in bright light. Accessibility ensures that they can still use your design in such environments.</li>
               </ul>
 
-              <p>By considering accessibility in your designs, youâ€™re making sure that no one is left outâ€”creating an experience that everyone can enjoy, no matter their abilities.</p>
+              <p>By considering accessibility in your designs, you're making sure that no one is left out, creating an experience that everyone can enjoy, no matter their abilities.</p>
           </div>
         </div>
         )}

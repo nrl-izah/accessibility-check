@@ -1,4 +1,4 @@
-# Accessibility Evaluator in UI Design for Figma
+# Accessibility Check in UI Design for Figma
 
 This Figma plugin was developed as part of my **Final Year Project** for the **BSc Computer Science** degree at the **University of Birmingham**. The project focuses on improving **accessibility in UI design** by helping designers identify and resolve common accessibility issues during the design phase.
 
